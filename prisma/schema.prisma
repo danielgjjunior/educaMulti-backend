@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  nome             String
+  dataNascimento   DateTime
+  cpf              String   @unique
+  endereco         String
+  profilePhotoPath String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  usuarioMaterias UsuarioMateria[]
+  usuarioDocs     UsuarioDoc[]
+}
+
+model Materia {
+  id             Int      @id @default(autoincrement())
+  nomeMateria    String
+  nomeProfessor  String
+  ativa          Boolean
+  backgroundPath String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  usuarioMaterias UsuarioMateria[]
+}
+
+model UsuarioMateria {
+  id          Int      @id @default(autoincrement())
+  idUsuario   Int
+  idMateria   Int
+  notaUsuario Float?
+  concluido   Boolean
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user    User    @relation(fields: [idUsuario], references: [id])
+  materia Materia @relation(fields: [idMateria], references: [id])
+}
+
+model Documento {
+  id         Int      @id @default(autoincrement())
+  nomeDoc    String
+  pathDoc    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  usuarioDocs UsuarioDoc[]
+}
+
+model UsuarioDoc {
+  id         Int      @id @default(autoincrement())
+  idDoc      Int
+  idUsuario  Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  doc  Documento @relation(fields: [idDoc], references: [id])
+  user User      @relation(fields: [idUsuario], references: [id])
+}
